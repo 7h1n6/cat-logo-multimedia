@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Catálogo Multimedia</h2>
+    <!-- Panel de Exportación -->
+<div class="card mb-4 bg-light border-primary">
+    <div class="card-body">
+        <h5 class="card-title text-primary">Exportar Catálogo a HTML</h5>
+        <p class="card-text text-muted small">Genera un archivo ZIP con el catálogo y sus imágenes para verlo sin internet.</p>
+        <form action="/export" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Categoría</label>
+                <select name="categoria" id="exportCategoria" class="form-select" required>
+                    <option value="">Selecciona...</option>
+                    <option value="Juegos">Juegos</option>
+                    <option value="Series">Series</option>
+                    <option value="Peliculas">Películas</option>
+                    <option value="Programas">Programas</option>
+                    <option value="Shows">Shows</option>
+                    <option value="Musica">Música</option>
+                    <option value="Novelas">Novelas</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Subcategoría</label>
+                <input type="text" name="subcategoria" id="exportSubcategoria" class="form-control" placeholder="Ej: Anime, PC, etc." required>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">📥 Descargar ZIP</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+        <a href="/items/create" class="btn btn-success">+ Añadir Ítem</a>
+    <% } %>
+</div>
+
+<div class="row">
+    <% if (items.length === 0) { %>
+        <div class="col-12 text-center text-muted mt-5">
+            <p>No hay ítems en el catálogo aún.</p>
+        </div>
+    <% } %>
+    
+    <% items.forEach(item => { %>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="/uploads/<%= item.imagen %>" class="card-img-top" alt="<%= item.titulo %>" style="height: 250px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title"><%= item.titulo %></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><%= item.categoria %> - <%= item.subcategoria %></h6>
+                    <% if (item.genero) { %>
+                        <span class="badge bg-primary"><%= item.genero %></span>
+                    <% } %>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="/items/<%= item._id %>" class="btn btn-sm btn-outline-info">Ver Detalle</a>
+                    <% if (typeof currentUser !== 'undefined' && currentUser && (currentUser.role === 'admin' || (item.creadoPor && item.creadoPor._id.toString() === currentUser._id.toString()))) { %>
+                        <div class="btn-group">
+                            <a href="/items/<%= item._id %>/edit" class="btn btn-sm btn-outline-warning">Editar</a>
+                            <form action="/items/<%= item._id %>/delete" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este ítem?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

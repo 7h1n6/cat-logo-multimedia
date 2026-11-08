@@ -1,0 +1,37 @@
+<%- include('../partials/header') %>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="/uploads/<%= item.imagen %>" class="img-fluid rounded shadow" alt="<%= item.titulo %>">
+    </div>
+    <div class="col-md-8">
+        <h1><%= item.titulo %></h1>
+        <p class="text-muted"><%= item.categoria %> > <%= item.subcategoria %></p>
+        <% if (item.genero) { %>
+            <span class="badge bg-primary fs-6 mb-3"><%= item.genero %></span>
+        <% } %>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Detalles</h5>
+                <ul class="list-group list-group-flush">
+                    <!-- Iteramos sobre el objeto 'detalles' usando Object.entries -->
+                    <% Object.entries(item.detalles).forEach(([key, value]) => { %>
+                        <% if (value) { %>
+                            <li class="list-group-item">
+                                <strong class="text-capitalize"><%= key %>:</strong> 
+                                <span style="white-space: pre-wrap;"><%= value %></span>
+                            </li>
+                        <% } %>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="/items" class="btn btn-secondary">Volver al Catálogo</a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

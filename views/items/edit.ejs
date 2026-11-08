@@ -1,0 +1,237 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Editar Ítem: <%= item.titulo %></h2>
+                <!-- Nota que el action apunta al ID del ítem -->
+                <form action="/items/<%= item._id %>/edit" method="POST" enctype="multipart/form-data">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Título:</label>
+                        <input type="text" name="titulo" class="form-control" value="<%= item.titulo %>" required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Categoría:</label>
+                            <select name="categoria" id="selectCategoria" class="form-select" required>
+                                <option value="">Selecciona...</option>
+                                <% taxonomies.forEach(tax => { %>
+                                    <!-- Marcamos como 'selected' si coincide con la del ítem -->
+                                    <option value="<%= tax.categoriaBase %>" <%= item.categoria === tax.categoriaBase ? 'selected' : '' %>>
+                                        <%= tax.categoriaBase %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Subcategoría:</label>
+                            <select name="subcategoria" id="selectSubcategoria" class="form-select" required>
+                                <option value="<%= item.subcategoria %>" selected><%= item.subcategoria %></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Género:</label>
+                            <select name="genero" id="selectGenero" class="form-select">
+                                <option value="<%= item.genero %>" selected><%= item.genero %></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen Actual:</label><br>
+                        <img src="/uploads/<%= item.imagen %>" alt="Portada" style="height: 100px; border-radius: 5px;" class="mb-2">
+                        <input type="file" name="imagen" class="form-control" accept="image/*">
+                        <small class="text-muted">Dejar en blanco si no deseas cambiar la imagen.</small>
+                    </div>
+
+                    <hr>
+                    <h5 class="mb-3">Detalles Específicos</h5>
+                    <div id="camposEspecificos" class="row mb-3">
+                        <!-- JS inyectará los campos aquí -->
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 text-dark font-weight-bold">Actualizar Ítem</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="taxonomies-data">
+    <%- JSON.stringify(taxonomies) %>
+</script>
+
+<script type="application/json" id="item-data">
+    <%- JSON.stringify(item) %>
+</script>
+
+<script>
+    const taxonomies = JSON.parse(document.getElementById("taxonomies-data").textContent);
+    const itemActual = JSON.parse(document.getElementById("item-data").textContent); // Pasamos el ítem completo al JS
+    
+    const selectCategoria = document.getElementById('selectCategoria');
+    const selectSubcategoria = document.getElementById('selectSubcategoria');
+    const selectGenero = document.getElementById('selectGenero');
+    const camposEspecificos = document.getElementById('camposEspecificos');
+
+    const camposPorCategoria = {
+        'Juegos': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaLanzamiento', label: 'Fecha de Lanzamiento' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'critica', label: 'Crítica', type: 'textarea' }
+        ],
+        'Series': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'capitulos', label: 'Cantidad de Capítulos', type: 'number' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'recepcion', label: 'Recepción del Público', type: 'textarea' }
+        ],
+        'Peliculas': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'actores', label: 'Actores Principales' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'critica', label: 'Crítica', type: 'textarea' }
+        ],
+        'Programas': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'sinopsis', label: 'Sinopsis/Detalles', type: 'textarea' }
+        ],
+        'Shows': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'sinopsis', label: 'Detalles', type: 'textarea' }
+        ],
+        'Musica': [
+            { name: 'artista', label: 'Artista/Banda' },
+            { name: 'discografica', label: 'Discográfica' },
+            { name: 'fechaLanzamiento', label: 'Fecha de Lanzamiento' },
+            { name: 'tracklist', label: 'Lista de Canciones', type: 'textarea' },
+            { name: 'sinopsis', label: 'Reseña', type: 'textarea' }
+        ],
+        'Novelas': [
+            { name: 'productora', label: 'Canal/Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'capitulos', label: 'Cantidad de Capítulos', type: 'number' },
+            { name: 'actores', label: 'Actores Principales' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' }
+        ]
+    };
+
+    // Función para renderizar los campos dinámicos (recibe los datos actuales si existen)
+    function renderizarCampos(categoria, detallesActuales = {}) {
+        camposEspecificos.innerHTML = '';
+        const campos = camposPorCategoria[categoria] || [];
+        
+        campos.forEach(campo => {
+            const div = document.createElement('div');
+            div.className = 'col-md-6 mb-3';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.textContent = campo.label;
+            
+            let input;
+            if (campo.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 3;
+                input.value = detallesActuales[campo.name] || ''; // Cargar valor
+            } else {
+                input = document.createElement('input');
+                input.type = campo.type || 'text';
+                input.value = detallesActuales[campo.name] || ''; // Cargar valor
+            }
+            input.name = `detalles[${campo.name}]`;
+            input.className = 'form-control';
+            
+            div.appendChild(label);
+            div.appendChild(input);
+            camposEspecificos.appendChild(div);
+        });
+    }
+
+    // Al cargar la página, disparamos el evento para que se llene todo
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Llenar subcategorías
+        const catSeleccionada = selectCategoria.value;
+        const taxEncontrada = taxonomies.find(t => t.categoriaBase === catSeleccionada);
+        
+        if (taxEncontrada) {
+            selectSubcategoria.innerHTML = ''; // Limpiar
+            taxEncontrada.subcategorias.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.nombre;
+                option.textContent = sub.nombre;
+                if (sub.nombre === itemActual.subcategoria) option.selected = true;
+                selectSubcategoria.appendChild(option);
+            });
+        }
+
+        // 2. Llenar géneros
+        if (taxEncontrada) {
+            const subEncontrada = taxEncontrada.subcategorias.find(s => s.nombre === itemActual.subcategoria);
+            if (subEncontrada) {
+                selectGenero.innerHTML = '';
+                subEncontrada.generos.forEach(gen => {
+                    const option = document.createElement('option');
+                    option.value = gen;
+                    option.textContent = gen;
+                    if (gen === itemActual.genero) option.selected = true;
+                    selectGenero.appendChild(option);
+                });
+            }
+        }
+
+        // 3. Renderizar campos específicos con los datos guardados
+        renderizarCampos(catSeleccionada, itemActual.detalles);
+    });
+
+    // Eventos de cambio (igual que en create)
+    selectCategoria.addEventListener('change', () => {
+        const catSeleccionada = selectCategoria.value;
+        selectSubcategoria.innerHTML = '<option value="">Selecciona...</option>';
+        selectGenero.innerHTML = '<option value="">Selecciona...</option>';
+        
+        const taxEncontrada = taxonomies.find(t => t.categoriaBase === catSeleccionada);
+        if (taxEncontrada) {
+            taxEncontrada.subcategorias.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.nombre;
+                option.textContent = sub.nombre;
+                selectSubcategoria.appendChild(option);
+            });
+        }
+        renderizarCampos(catSeleccionada); // Renderiza vacío al cambiar de categoría
+    });
+
+    selectSubcategoria.addEventListener('change', () => {
+        const catSeleccionada = selectCategoria.value;
+        const subSeleccionada = selectSubcategoria.value;
+        selectGenero.innerHTML = '<option value="">Selecciona...</option>';
+        
+        const taxEncontrada = taxonomies.find(t => t.categoriaBase === catSeleccionada);
+        if (taxEncontrada) {
+            const subEncontrada = taxEncontrada.subcategorias.find(s => s.nombre === subSeleccionada);
+            if (subEncontrada) {
+                subEncontrada.generos.forEach(gen => {
+                    const option = document.createElement('option');
+                    option.value = gen;
+                    option.textContent = gen;
+                    selectGenero.appendChild(option);
+                });
+            }
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>

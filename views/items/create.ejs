@@ -1,0 +1,205 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Añadir Nuevo Ítem</h2>
+                <form action="/items/create" method="POST" enctype="multipart/form-data">
+                    
+                    <!-- Campos Comunes -->
+                    <div class="mb-3">
+                        <label class="form-label">Título:</label>
+                        <input type="text" name="titulo" class="form-control" required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Categoría:</label>
+                            <select name="categoria" id="selectCategoria" class="form-select" required>
+                                <option value="">Selecciona...</option>
+                                <% taxonomies.forEach(tax => { %>
+                                    <option value="<%= tax.categoriaBase %>"><%= tax.categoriaBase %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Subcategoría:</label>
+                            <select name="subcategoria" id="selectSubcategoria" class="form-select" required disabled>
+                                <option value="">Primero elige categoría</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Género:</label>
+                            <select name="genero" id="selectGenero" class="form-select" disabled>
+                                <option value="">Primero elige subcategoría</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen de Portada (Opcional):</label>
+                        <input type="file" name="imagen" class="form-control" accept="image/*">
+                    </div>
+
+                    <hr>
+                    <h5 class="mb-3">Detalles Específicos</h5>
+                    <div id="camposEspecificos" class="row mb-3">
+                        <!-- Aquí JavaScript inyectará los campos según la categoría -->
+                        <p class="text-muted text-center">Selecciona una categoría para ver los campos específicos</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Guardar Ítem</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="taxonomies-data">
+    <%- JSON.stringify(taxonomies) %>
+</script>
+
+<script>
+    // Inyectamos los datos de taxonomía desde el servidor al cliente
+    const taxonomies = JSON.parse(document.getElementById("taxonomies-data").textContent);
+    
+    const selectCategoria = document.getElementById('selectCategoria');
+    const selectSubcategoria = document.getElementById('selectSubcategoria');
+    const selectGenero = document.getElementById('selectGenero');
+    const camposEspecificos = document.getElementById('camposEspecificos');
+
+    // Definimos qué campos específicos tiene cada categoría
+    const camposPorCategoria = {
+        'Juegos': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaLanzamiento', label: 'Fecha de Lanzamiento' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'critica', label: 'Crítica', type: 'textarea' }
+        ],
+        'Series': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'capitulos', label: 'Cantidad de Capítulos', type: 'number' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'recepcion', label: 'Recepción del Público', type: 'textarea' }
+        ],
+        'Peliculas': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'actores', label: 'Actores Principales' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' },
+            { name: 'critica', label: 'Crítica', type: 'textarea' }
+        ],
+        'Programas': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'sinopsis', label: 'Sinopsis/Detalles', type: 'textarea' }
+        ],
+        'Shows': [
+            { name: 'productora', label: 'Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'sinopsis', label: 'Detalles', type: 'textarea' }
+        ],
+        'Musica': [
+            { name: 'artista', label: 'Artista/Banda' },
+            { name: 'discografica', label: 'Discográfica' },
+            { name: 'fechaLanzamiento', label: 'Fecha de Lanzamiento' },
+            { name: 'tracklist', label: 'Lista de Canciones', type: 'textarea' },
+            { name: 'sinopsis', label: 'Reseña', type: 'textarea' }
+        ],
+        'Novelas': [
+            { name: 'productora', label: 'Canal/Productora' },
+            { name: 'fechaEstreno', label: 'Fecha de Estreno' },
+            { name: 'calidad', label: 'Calidad' },
+            { name: 'capitulos', label: 'Cantidad de Capítulos', type: 'number' },
+            { name: 'actores', label: 'Actores Principales' },
+            { name: 'sinopsis', label: 'Sinopsis', type: 'textarea' }
+        ]
+    };
+
+    //Cuando cambia la categoría
+    selectCategoria.addEventListener('change', () => {
+        const catSeleccionada = selectCategoria.value;
+        
+        // Limpiar subcategorías y géneros
+        selectSubcategoria.innerHTML = '<option value="">Selecciona...</option>';
+        selectGenero.innerHTML = '<option value="">Primero elige subcategoría</option>';
+        selectGenero.disabled = true;
+        
+        // Llenar subcategorías
+        const taxEncontrada = taxonomies.find(t => t.categoriaBase === catSeleccionada);
+        if (taxEncontrada) {
+            taxEncontrada.subcategorias.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.nombre;
+                option.textContent = sub.nombre;
+                selectSubcategoria.appendChild(option);
+            });
+            selectSubcategoria.disabled = false;
+        } else {
+            selectSubcategoria.disabled = true;
+        }
+
+        // Renderizar campos específicos
+        camposEspecificos.innerHTML = '';
+        const campos = camposPorCategoria[catSeleccionada] || [];
+        
+        if (campos.length === 0) {
+            camposEspecificos.innerHTML = '<p class="text-muted">No hay campos específicos para esta categoría.</p>';
+        }
+
+        campos.forEach(campo => {
+            const div = document.createElement('div');
+            div.className = 'col-md-6 mb-3';
+            
+            const label = document.createElement('label');
+            label.className = 'form-label';
+            label.textContent = campo.label;
+            
+            let input;
+            if (campo.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 3;
+            } else {
+                input = document.createElement('input');
+                input.type = campo.type || 'text';
+            }
+            input.name = `detalles[${campo.name}]`; // Importante para que Express lo agrupe en req.body.detalles
+            input.className = 'form-control';
+            
+            div.appendChild(label);
+            div.appendChild(input);
+            camposEspecificos.appendChild(div);
+        });
+    });
+
+    //Cuando cambia la subcategoría (para llenar los géneros)
+    selectSubcategoria.addEventListener('change', () => {
+        const catSeleccionada = selectCategoria.value;
+        const subSeleccionada = selectSubcategoria.value;
+        
+        selectGenero.innerHTML = '<option value="">Selecciona...</option>';
+        
+        const taxEncontrada = taxonomies.find(t => t.categoriaBase === catSeleccionada);
+        if (taxEncontrada) {
+            const subEncontrada = taxEncontrada.subcategorias.find(s => s.nombre === subSeleccionada);
+            if (subEncontrada && subEncontrada.generos.length > 0) {
+                subEncontrada.generos.forEach(gen => {
+                    const option = document.createElement('option');
+                    option.value = gen;
+                    option.textContent = gen;
+                    selectGenero.appendChild(option);
+                });
+                selectGenero.disabled = false;
+            } else {
+                selectGenero.disabled = true;
+            }
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>
