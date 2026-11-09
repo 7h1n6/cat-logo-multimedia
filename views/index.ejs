@@ -8,7 +8,7 @@
         <div class="alert alert-info">
             ¡Bienvenido de nuevo, <strong><%= currentUser.name %></strong>!
         </div>
-        <a href="#" class="btn btn-primary btn-lg mt-3">Ver mis Ítems</a>
+        <a href="/items" class="btn btn-primary btn-lg mt-3">Ver mis Ítems</a>
         
         <% if (currentUser.role === 'admin') { %>
             <a href="/taxonomy" class="btn btn-warning btn-lg mt-3">Administrar Categorías</a>
