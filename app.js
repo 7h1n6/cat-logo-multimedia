@@ -1,4 +1,4 @@
-require('node:dns/promises').setServers(['1.1.1.1', '8.8.8.8']);
+//require('dns').setServers(['1.1.1.1', '8.8.8.8']);
 
 require('dotenv').config();
 const express = require('express');
@@ -58,13 +58,12 @@ app.use(errorHandler);
 
 //Iniciar server
 const startServer = async () => {
-    
-    //await connectDB(); 
-    
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    });
+    connectDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en http://localhost:${PORT}`);
+        });
+    }); 
 };
 
 startServer();

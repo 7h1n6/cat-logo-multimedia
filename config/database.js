@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 
+const dbURL = process.env.MONGO_URI;
 const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
+            mongoose.connect(dbURL, {
             serverSelectionTimeoutMS: 15000,
             bufferCommands: false,
+            autoSelectFamily: false
         });
         console.log('[OK]M ongoDB conectado correctamente');
     } catch (error) {

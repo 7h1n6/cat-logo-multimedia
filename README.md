@@ -22,5 +22,5 @@ Aplicación web full-stack desarrollada bajo el patrón MVC para crear catalogos
 3. Crear un archivo `.env` con:
    ```env
    PORT=3000
-   MONGO_URI=mongodb+srv://<user>:<db-password>@tfnbd.tvpmifr.mongodb.net/
+   MONGO_URI=mongodb+srv://user:password@cmnode.nzonsqo.mongodb.net/
    JWT_SECRET=El_secreto_de_Node_2026

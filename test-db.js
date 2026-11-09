@@ -7,11 +7,12 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 console.log('⏳ Intentando conectar a MongoDB Atlas...');
-
+const dbURL = process.env.MONGO_URI;
 // 3. Intentamos la conexión con un tiempo límite
-mongoose.connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 5000, // 5 segundos máximo
-    bufferCommands: false
+mongoose.connect(dbURL, {
+    serverSelectionTimeoutMS: 15000, // 5 segundos máximo
+    bufferCommands: false,
+    autoSelectFamily: false
 })
 .then(() => {
     console.log('¡CONEXIÓN EXITOSA A MONGODB ATLAS!');
