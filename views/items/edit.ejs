@@ -61,11 +61,11 @@
 </div>
 
 <script type="application/json" id="taxonomies-data">
-    <%- JSON.stringify(taxonomies) %>
+    <%- JSON.stringify(taxonomies).replace(/</g, '\\u003c').replace(/>/g, '\\u003e') %>
 </script>
 
 <script type="application/json" id="item-data">
-    <%- JSON.stringify(item) %>
+    <%- JSON.stringify(item).replace(/</g, '\\u003c').replace(/>/g, '\\u003e') %>
 </script>
 
 <script>

@@ -19,8 +19,9 @@ Aplicación web full-stack desarrollada bajo el patrón MVC para crear catalogos
 ## Instalación Local
 1. Clonar el repositorio: `git clone ...`
 2. Instalar dependencias: `npm install`
-3. Crear un archivo `.env` con:
+3. Crear un archivo `.env`:
    ```env
    PORT=3000
-   MONGO_URI=mongodb+srv://user:password@cmnode.nzonsqo.mongodb.net/
-   JWT_SECRET=El_secreto_de_Node_2026
+   MONGO_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/<basededatos>
+   JWT_SECRET=Tu_secreto_JWT_aqui
+   SESSION_SECRET=Tu_secreto_de_sesion_aqui

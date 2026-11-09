@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
-    secret: 'secreto_sesion_2026',
+    secret: process.env.SESSION_SECRET || 'secreto_sesion_2026_dev',
     resave: false,
     saveUninitialized: true
 }));

@@ -57,7 +57,7 @@
 </div>
 
 <script type="application/json" id="taxonomies-data">
-    <%- JSON.stringify(taxonomies) %>
+    <%- JSON.stringify(taxonomies).replace(/</g, '\\u003c').replace(/>/g, '\\u003e') %>
 </script>
 
 <script>
