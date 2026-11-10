@@ -8,3 +8,5 @@ const itemSchema = new mongoose.Schema({
     detalles: { type: mongoose.Schema.Types.Mixed, default: {} },
     creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
+
+module.exports = mongoose.model('Item', itemSchema);

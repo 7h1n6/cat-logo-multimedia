@@ -25,3 +25,5 @@ Aplicación web full-stack desarrollada bajo el patrón MVC para crear catalogos
    MONGO_URI=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/<basededatos>
    JWT_SECRET=Tu_secreto_JWT_aqui
    SESSION_SECRET=Tu_secreto_de_sesion_aqui
+
+!!!Agradecimientos muy sinceros a icor-dev por solucionar la conexión con la BD que parecía imposible¡¡¡
